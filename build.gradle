@@ -1,0 +1,26 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.9.21"
+    id "application"
+}
+
+repositories {
+    mavenCentral()
+}
+
+
+sourceSets {
+    main {
+        kotlin.srcDir("src")
+    }
+}
+
+tasks {
+    wrapper {
+        gradleVersion = "8.5"
+    }
+}
+
+application {
+    mainClassName = "Day01Kt"
+}
+
