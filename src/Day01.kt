@@ -11,7 +11,9 @@ val spellings = hashMapOf(
         "zero" to 0
 )
 
-data class CalibrationValue(val firstDigit: Int, val lastDigit: Int)
+data class Digit(val value: Int, val index: Int)
+
+data class CalibrationValue(val firstDigit: Digit, val lastDigit: Digit)
 
 fun main() {
     val input = readInput("input")
@@ -26,67 +28,70 @@ fun main() {
 private fun part1(input: List<String>): Int {
     return input.sumOf { line ->
         val calibrationValue = firstAndLastDigit(line)
-        calibrationValue.lastDigit + 10 * calibrationValue.firstDigit
+        if (calibrationValue == null) {
+            throw Exception("No digits found in $line")
+        } else
+        calibrationValue.lastDigit.value + 10 * calibrationValue.firstDigit.value
     }
 }
 
 private fun part2(input: List<String>): Int {
     return input.sumOf { line ->
-        val calibrationValue = firstAndLastDigit(line, spellings)
-        calibrationValue.lastDigit + 10 * calibrationValue.firstDigit
+        val calibrationValueOnlyDigits = firstAndLastDigit(line)
+        val calibrationValueOnlySpelling = firstAndLastDigit(line, spellings)
+
+        var firstDigit = calibrationValueOnlyDigits?.firstDigit?.value
+        calibrationValueOnlySpelling?.let {
+            if (firstDigit == null || calibrationValueOnlyDigits!!.firstDigit.index > it.firstDigit.index) {
+                firstDigit = calibrationValueOnlySpelling.firstDigit.value
+            }
+        }
+
+        var lastDigit = calibrationValueOnlyDigits?.lastDigit?.value
+        calibrationValueOnlySpelling?.let {
+            if (lastDigit == null || calibrationValueOnlyDigits!!.lastDigit.index < it.lastDigit.index) {
+                lastDigit = calibrationValueOnlySpelling.lastDigit.value
+            }
+        }
+        if (firstDigit == null || lastDigit == null) {
+            throw Exception("No digits found in $line")
+        }
+        lastDigit!! + 10 * firstDigit!!
     }
 }
 
-
-fun firstAndLastDigit(line: String, spellings: Map<String, Int>): CalibrationValue {
-    var firstDigit: String? = null
-    var firstDigitIdx: Int? = null
-    var lastDigit: String? = null
-    var lastDigitIdx: Int? = null
+fun firstAndLastDigit(line: String, spellings: Map<String, Int>): CalibrationValue? {
+    var firstDigit: Digit? = null
+    var lastDigit: Digit? = null
 
     for ((spelling, value) in spellings) {
-        val firstIndexOf = line.indexOf(spelling)
-        if (firstIndexOf >= 0 && (firstDigitIdx == null || firstIndexOf < firstDigitIdx)) {
-            firstDigitIdx = firstIndexOf
-            firstDigit = value.toString()
+        var foundIndex = line.indexOf(spelling)
+        if (foundIndex >= 0 && (firstDigit == null || firstDigit.index > foundIndex)) {
+            firstDigit = Digit(value, foundIndex)
         }
 
-        val lastIndexOf = line.lastIndexOf(spelling)
-        if (lastIndexOf >= 0 && (lastDigitIdx == null || lastIndexOf > lastDigitIdx)) {
-            lastDigitIdx = lastIndexOf
-            lastDigit = value.toString()
+        foundIndex = line.lastIndexOf(spelling)
+        if (foundIndex >= 0 && (lastDigit == null || lastDigit.index < foundIndex)) {
+            lastDigit = Digit(value, foundIndex)
         }
     }
-
-    line.forEachIndexed { index, char ->
-        if (char.isDigit()) {
-            if (firstDigitIdx == null || index < firstDigitIdx!!) {
-                firstDigitIdx = index
-                firstDigit = char.toString()
-            }
-            if (lastDigitIdx == null || index > lastDigitIdx!!) {
-                lastDigitIdx = index
-                lastDigit = char.toString()
-            }
-        }
+    if (firstDigit != null) {
+        return CalibrationValue(firstDigit, lastDigit!!)
     }
-    if (firstDigit != null && lastDigit != null) {
-        return CalibrationValue(firstDigit!!.toInt(), lastDigit!!.toInt())
-    }
-    throw RuntimeException("No digit found in $line")
+    return null
 }
 
-fun firstAndLastDigit(line: String): CalibrationValue {
-    var firstDigit: String? = null
-    var lastDigit: String? = null
-    for (char in line) {
-        if (char.isDigit()) {
-            firstDigit = firstDigit ?: char.toString()
-            lastDigit = char.toString()
+fun firstAndLastDigit(line: String): CalibrationValue? {
+    var firstDigit: Digit? = null
+    var lastDigit: Digit? = null
+    line.forEachIndexed { index, c ->
+        if (c.isDigit()) {
+            firstDigit = firstDigit ?: Digit(c.digitToInt(), index)
+            lastDigit = Digit(c.digitToInt(), index)
         }
     }
-    if (firstDigit != null && lastDigit != null) {
-        return CalibrationValue(firstDigit.toInt(), lastDigit.toInt())
+    if (firstDigit != null) {
+        return CalibrationValue(firstDigit!!, lastDigit!!)
     }
-    throw RuntimeException("No digit found in $line")
+    return null
 }
