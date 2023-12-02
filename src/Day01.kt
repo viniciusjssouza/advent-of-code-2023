@@ -13,6 +13,31 @@ val spellings = hashMapOf(
 
 data class CalibrationValue(val firstDigit: Int, val lastDigit: Int)
 
+fun main() {
+    val input = readInput("input")
+
+    val part1Result = part1(input)
+    println("Part 1: $part1Result")
+
+    val part2Result = part2(input)
+    println("Part 2: $part2Result")
+}
+
+private fun part1(input: List<String>): Int {
+    return input.sumOf { line ->
+        val calibrationValue = firstAndLastDigit(line)
+        calibrationValue.lastDigit + 10 * calibrationValue.firstDigit
+    }
+}
+
+private fun part2(input: List<String>): Int {
+    return input.sumOf { line ->
+        val calibrationValue = firstAndLastDigit(line, spellings)
+        calibrationValue.lastDigit + 10 * calibrationValue.firstDigit
+    }
+}
+
+
 fun firstAndLastDigit(line: String, spellings: Map<String, Int>): CalibrationValue {
     var firstDigit: String? = null
     var firstDigitIdx: Int? = null
@@ -64,28 +89,4 @@ fun firstAndLastDigit(line: String): CalibrationValue {
         return CalibrationValue(firstDigit.toInt(), lastDigit.toInt())
     }
     throw RuntimeException("No digit found in $line")
-}
-
-fun main() {
-    val input = readInput("input")
-
-    val part1Result = part1(input)
-    println("Part 1: $part1Result")
-
-    val part2Result = part2(input)
-    println("Part 2: $part2Result")
-}
-
-private fun part1(input: List<String>): Int {
-    return input.sumOf { line ->
-        val calibrationValue = firstAndLastDigit(line)
-        calibrationValue.lastDigit + 10 * calibrationValue.firstDigit
-    }
-}
-
-private fun part2(input: List<String>): Int {
-    return input.sumOf { line ->
-        val calibrationValue = firstAndLastDigit(line, spellings)
-        calibrationValue.lastDigit + 10 * calibrationValue.firstDigit
-    }
 }
