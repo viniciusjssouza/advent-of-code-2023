@@ -1,5 +1,3 @@
-import java.lang.StringBuilder
-
 data class Card(val id: Int, val win: Set<Long>, val ownedNumbers: Set<Long>) {
 
     fun totalPoints(): Long {

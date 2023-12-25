@@ -24,3 +24,7 @@ application {
     mainClassName = "Day01Kt"
 }
 
+dependencies {
+    implementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+}
+
