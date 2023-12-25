@@ -121,6 +121,7 @@ fun readCards(cards: String, withJoker: Boolean) = cards.map {
     CamelCard(it, withJoker)
 }
 
+// Just tests for the calcStrength function
 fun runTests7() {
     assertHand(
         Hand(cards = readCards("22222", withJoker = true), bid = 1), expected = 50
