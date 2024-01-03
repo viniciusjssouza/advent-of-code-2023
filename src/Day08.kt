@@ -5,15 +5,19 @@ data class Place(val id: String, val left: String, val right: String) {
     fun isEnd() = this.id.endsWith("Z")
 }
 
-data class Cycle(val startAtStep:Int, val length:Int)
+data class Cycle(val startAtStep: Int, val length: Int)
 
 fun BigInteger.lcm(another: BigInteger): BigInteger {
-    return  this.divide(this.gcd( another)).multiply(another)
+    return this.divide(this.gcd(another)).multiply(another)
 }
 
 data class WastelandMap(val places: Map<String, Place>) {
 
-    class Traversal(start: Place, private val instructions: String, private val places: Map<String, Place>) {
+    class Traversal(
+        start: Place,
+        private val instructions: String,
+        private val places: Map<String, Place>
+    ) {
         private var steps = 0
         private var current: String = start.id
         fun getSteps() = this.steps
@@ -41,13 +45,16 @@ data class WastelandMap(val places: Map<String, Place>) {
     }
 
     fun collectCycleInfo(start: Place, instructions: String): Cycle {
-        val visits = mutableMapOf<String,Int>()
+        val visits = mutableMapOf<String, Int>()
         val traversal = Traversal(start, instructions, this.places)
         var curr = start
         while (true) {
             if (curr.isEnd()) {
                 if (visits.containsKey(curr.id)) {
-                    return Cycle(startAtStep = visits[curr.id]!!, length = traversal.getSteps()-visits[curr.id]!!)
+                    return Cycle(
+                        startAtStep = visits[curr.id]!!,
+                        length = traversal.getSteps() - visits[curr.id]!!
+                    )
                 }
             }
             visits[curr.id] = traversal.getSteps()
@@ -74,7 +81,7 @@ fun main() {
         // For all cycles, the initial offset is equal to the length. This way, we can reduce the problem
         // to calculating the LCM of all cycle lengths
     }.fold(lcm) { curr, cycle ->
-         curr.lcm(BigInteger.valueOf(cycle.length.toLong()))
+        curr.lcm(BigInteger.valueOf(cycle.length.toLong()))
     }
     println("Part2: $part2")
 }
