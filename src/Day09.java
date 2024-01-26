@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public class Day09 {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public record ValueHistory(long[] values) {
         public long extrapolateNextValue(BiFunction<long[], Integer, Long> valueSelector,  BinaryOperator<Long> reducer) {
